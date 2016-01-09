@@ -201,12 +201,21 @@ class Admin extends CI_Controller {
 		if(isset($_SESSION['username'])){
 			$this->load->model('Admin_Model');
 			$data['data']=$this->Admin_Model->getjoiner();
+			$data['numall']=count($data['data']);
+			$data['numyes']=$data['numlate']=0;
 			foreach ($data['data'] as &$row){
 				$school = $this->Admin_Model->check($row['school_id'],'school','id');
 				$row['school_id'] = $school['school'];
-				if($row['time']=='0'){$row['time']='未签到';}
+				if($row['time']=='0'){$row['time']='未签到'; $data['numyes']++;}
 				if($row['time']=='1'){$row['time']='已签到';}
+				if($row['login_time']<=$_SESSION['start_time'] && !empty($row['login_time'])){
+					$row['late']='';
+					$data['numlate']++;
+				}
+				else
+					$row['late']='是';
 				if(!empty($row['login_time']))$row['login_time']=date('Y-m-d H:i:s',intval($row['login_time']));
+
 			}
 			//var_dump($data);
 			$this->load->view('admin_header');
@@ -218,11 +227,15 @@ class Admin extends CI_Controller {
 	public function doview($time){
 		if(isset($_SESSION['username'])){
 			$this->load->model('Admin_Model');
+
+			$data['numyes']=$data['numlate']=0;
 			$data['data']=$this->Admin_Model->gainjoiner($time);
+			$data['numall']=count($data['data']);
 			foreach ($data['data'] as &$row){
 				$school = $this->Admin_Model->check($row['school_id'],'school','id');
 				$row['school_id'] = $school['school'];
-				if($row['time']=='0'){$row['time']='未签到';}
+				$row['late']='';
+				if($row['time']=='0'){$row['time']='未签到'; $data['numyes']++;}
 				if($row['time']=='1'){$row['time']='已签到';}
 				if(!empty($row['login_time'])){$row['login_time']=date('Y-m-d H:i:s',intval($row['login_time']));}
 			}

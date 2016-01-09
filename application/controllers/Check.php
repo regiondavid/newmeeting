@@ -41,13 +41,17 @@ class Check extends CI_Controller {
 					$ip=$_SERVER['REMOTE_ADDR'];
 					$this->load->model('Admin_Model');
 					$result=$this->Admin_Model->getdetail($username);
-					
+					$_SESSION['all']=$this->Admin_Model->joinercount();
+					$_SESSION['yiqian']=count($this->Admin_Model->gainjoiner('1'));
+					$_SESSION['weiqian']=count($this->Admin_Model->gainjoiner('0'));		
+					$_SESSION['start_time']=$this->Admin_Model->getjointime();
 					$_SESSION["username"]=$username;
-					$_SESSION["time"]=$result->login_time;
-					$_SESSION["ip"]=$result->login_ip;
-					$_SESSION['auth']=intval($result->lock);
+					$_SESSION["time"]=$result['login_time'];
+					$_SESSION["ip"]=$result['login_ip'];
+					$_SESSION['auth']=$result['lock'];
 
-					echo $_SESSION['username'];
+
+					//echo $_SESSION['username'];
 
 					$this->Admin_Model->detailinsert($username,$ip,$time);
 					
@@ -310,3 +314,4 @@ class Check extends CI_Controller {
 		$this->captcha->showImg();
  }
 }
+
